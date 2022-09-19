@@ -30,7 +30,7 @@ class Controller {
   static async getWeatherAtCoordinates(lat, lon) {
     try {
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${Controller.key}`
+        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${Controller.key}`
       );
       const json = await response.json();
       return json;
@@ -38,6 +38,23 @@ class Controller {
       console.log(err);
     }
     return null;
+  }
+
+  static processJson(json) {
+    const forecasts = [];
+    const { list } = json;
+    list.forEach((element) => {
+      const date = element.dt_txt;
+      const currentTemp = element.main.temp;
+      const minTemp = element.main.temp_min;
+      const maxTemp = element.main.temp_max;
+      const feelsLike = element.main.feels_like;
+      forecasts.push({ date, currentTemp, minTemp, maxTemp, feelsLike });
+    });
+
+    const city = json.city.name;
+
+    return { city, forecasts };
   }
 }
 
