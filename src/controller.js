@@ -50,28 +50,33 @@ class Controller {
     }
   }
 
-  static async processJson(json) {
-    if (json !== null && json !== undefined) {
-      // use returned lat and lon to fetch and process location data
-      let location;
-      try {
-        const locationData = await fetch(
-          `http://api.openweathermap.org/geo/1.0/reverse?lat=${json.lat}&lon=${json.lon}&limit=1&appid=${Controller.key}`
-        );
-        const locationJson = await locationData.json();
-        if ("state" in locationJson[0]) {
-          location = {
-            value: `${locationJson[0].name}, ${locationJson[0].state}`,
-          };
-        } else {
-          location = {
-            value: `${locationJson[0].name}, ${locationJson[0].country}`,
-          };
-        }
-      } catch (err) {
-        console.log(err);
+  static async processLocation(json) {
+    let location;
+    try {
+      // lat and lon to fetch and process location data
+      const locationData = await fetch(
+        `http://api.openweathermap.org/geo/1.0/reverse?lat=${json.lat}&lon=${json.lon}&limit=1&appid=${Controller.key}`
+      );
+      const locationJson = await locationData.json();
+      if ("state" in locationJson[0]) {
+        location = {
+          value: `${locationJson[0].name}, ${locationJson[0].state}`,
+        };
+      } else {
+        location = {
+          value: `${locationJson[0].name}, ${locationJson[0].country}`,
+        };
       }
-      //  process current weather data
+      return location;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
+
+  static processCurrentWeather(json) {
+    //  process current weather data
+    try {
       const current = {
         description: json.current.weather[0].description,
         icon: json.current.weather[0].icon,
@@ -80,7 +85,15 @@ class Controller {
         wind: json.current.wind_speed,
         humidity: json.current.humidity,
       };
+      return current;
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
 
+  static processWeeklyWeather(json) {
+    try {
       // process weathly weather data
       const week = [];
       json.daily.forEach((element) => {
@@ -96,9 +109,19 @@ class Controller {
         week.push({ day });
       });
       week.shift(); // remove first day of the week since we are referencing to it as current day
-      return { location, current, week };
+      return week;
+    } catch (err) {
+      console.log(err);
+      return err;
     }
-    return null;
+  }
+
+  static async processJson(json) {
+    const location = await Controller.processLocation(json);
+    const current = Controller.processCurrentWeather(json);
+    const week = Controller.processWeeklyWeather(json);
+
+    return { location, current, week };
   }
 }
 

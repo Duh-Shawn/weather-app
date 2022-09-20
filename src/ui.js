@@ -6,6 +6,20 @@ class UI {
 
   static search = document.querySelector("form input");
 
+  static renderCurrentWeather(locationJSON, currentWeatherJSON) {
+    const locationDiv = document.querySelector(
+      ".current-weather-container .location"
+    );
+    locationDiv.innerHTML = `<p>${locationJSON.value}</p>`;
+
+    const leftDiv = document.querySelector(".current-weather-container .left");
+    console.log(leftDiv);
+    leftDiv.innerHTML = `<p class="currentTemp">${currentWeatherJSON.currentTemp}</p>
+    <img src="http://openweathermap.org/img/wn/${currentWeatherJSON.icon}@2x.png" class="icon"></img>`
+
+    const rightDiv = document.querySelector(".current-weather-container .right");
+  }
+
   static async init() {
     UI.form.addEventListener("submit", async (e) => {
       e.preventDefault();
