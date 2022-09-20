@@ -1,9 +1,11 @@
+import UI from "./ui";
 import Controller from "./controller";
 import sampleJson from "./sample.json";
-import UI from "./ui";
 
 async function main() {
-  UI.init();
+  // UI.init();
+  const weatherData = await Controller.processJson(sampleJson);
+  console.log(weatherData);
 }
 
 main();

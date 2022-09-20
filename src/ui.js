@@ -12,13 +12,15 @@ class UI {
       // search field is not empty
       if (UI.search.value !== "") {
         try {
+          const coordinates = await Controller.getLatLon(UI.search.value);
+          const weatherJson = await Controller.getWeatherAtCoordinates(
+            coordinates.lat,
+            coordinates.lon
+          );
+          const weatherData = await Controller.processJson(weatherJson);
           //   const coordinates = await Controller.getLatLon(UI.search.value);
-          //   const weatherJson = await Controller.getWeatherAtCoordinates(
-          //     coordinates.lat,
-          //     coordinates.lon
-          //   );
-          //   const weatherData = await Controller.processJson(weatherJson);
-          const weatherData = await Controller.processJson(sampleJson);
+          //   const weatherData = await Controller.processJson(sampleJson);
+          console.log(coordinates);
           console.log(weatherData);
         } catch (err) {
           console.log(err);
