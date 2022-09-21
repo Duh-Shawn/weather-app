@@ -14,10 +14,16 @@ class UI {
 
     const leftDiv = document.querySelector(".current-weather-container .left");
     console.log(leftDiv);
-    leftDiv.innerHTML = `<p class="currentTemp">${currentWeatherJSON.currentTemp}</p>
-    <img src="http://openweathermap.org/img/wn/${currentWeatherJSON.icon}@2x.png" class="icon"></img>`
+    leftDiv.innerHTML = `<p class="current-temp">${currentWeatherJSON.currentTemp}&deg; F</p>
+    <div class="weather-condition"><img src="http://openweathermap.org/img/wn/${currentWeatherJSON.icon}@2x.png" class="icon"></img>
+    <p class="description">${currentWeatherJSON.description}</p><div>`;
 
-    const rightDiv = document.querySelector(".current-weather-container .right");
+    const rightDiv = document.querySelector(
+      ".current-weather-container .right"
+    );
+    rightDiv.innerHTML = `<div class="details"><p class="feels-like">Feels Like: ${currentWeatherJSON.feelsLike}&deg; F</p>
+    <p class="wind">Wind: ${currentWeatherJSON.wind} MPH</p>
+    <p class="humidity">Humidity: ${currentWeatherJSON.humidity}</p></div>`;
   }
 
   static async init() {
