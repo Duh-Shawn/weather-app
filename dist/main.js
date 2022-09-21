@@ -26,7 +26,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \**********************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _ui__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ui */ \"./src/ui.js\");\n/* harmony import */ var _controller__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./controller */ \"./src/controller.js\");\n/* harmony import */ var _sample_json__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sample.json */ \"./src/sample.json\");\n\n\n\n\nasync function main() {\n  _ui__WEBPACK_IMPORTED_MODULE_0__[\"default\"].init();\n  // const weatherData = await Controller.processJson(sampleJson);\n  // console.log(weatherData);\n  // UI.renderCurrentWeather(weatherData.location, weatherData.current);\n  // UI.renderyWeeklyWeather(weatherData.week);\n}\n\nmain();\n\n\n//# sourceURL=webpack:///./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _ui__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ui */ \"./src/ui.js\");\n/* harmony import */ var _controller__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./controller */ \"./src/controller.js\");\n/* harmony import */ var _sample_json__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sample.json */ \"./src/sample.json\");\n\n\n\n\nasync function main() {\n  try {\n    const coordinates = await _controller__WEBPACK_IMPORTED_MODULE_1__[\"default\"].getLatLon(\"london\");\n    const weatherJson = await _controller__WEBPACK_IMPORTED_MODULE_1__[\"default\"].getWeatherAtCoordinates(\n      coordinates.lat,\n      coordinates.lon\n    );\n    const weatherData = await _controller__WEBPACK_IMPORTED_MODULE_1__[\"default\"].processJson(weatherJson);\n    _ui__WEBPACK_IMPORTED_MODULE_0__[\"default\"].renderCurrentWeather(weatherData.location, weatherData.current);\n    _ui__WEBPACK_IMPORTED_MODULE_0__[\"default\"].renderyWeeklyWeather(weatherData.week);\n  } catch (err) {\n    console.log(err);\n  }\n  _ui__WEBPACK_IMPORTED_MODULE_0__[\"default\"].init();\n  // const weatherData = await Controller.processJson(sampleJson);\n  // console.log(weatherData);\n  // UI.renderCurrentWeather(weatherData.location, weatherData.current);\n  // UI.renderyWeeklyWeather(weatherData.week);\n  // UI.setDayOrNight();\n}\n\nmain();\n\n\n//# sourceURL=webpack:///./src/index.js?");
 
 /***/ }),
 
@@ -36,7 +36,27 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _ui_
   \*******************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _controller__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./controller */ \"./src/controller.js\");\n/* harmony import */ var _sample_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sample.json */ \"./src/sample.json\");\n\r\n\r\n\r\nclass UI {\r\n  static form = document.querySelector(\"form\");\r\n\r\n  static search = document.querySelector(\"form input\");\r\n\r\n  static weeklyWeather = document.getElementById(\"weekly-weather\");\r\n\r\n  static renderCurrentWeather(locationJSON, currentWeatherJSON) {\r\n    const locationDiv = document.querySelector(\r\n      \".current-weather-container .location\"\r\n    );\r\n    locationDiv.innerHTML = `<p>${locationJSON.value}</p>`;\r\n\r\n    const leftDiv = document.querySelector(\".current-weather-container .left\");\r\n    leftDiv.innerHTML = `<p class=\"current-temp\">${currentWeatherJSON.currentTemp}&deg; F</p>\r\n    <div class=\"weather-condition\"><img src=\"http://openweathermap.org/img/wn/${currentWeatherJSON.icon}@2x.png\" class=\"icon\"></img>\r\n    <p class=\"description\">${currentWeatherJSON.description}</p><div>`;\r\n\r\n    const rightDiv = document.querySelector(\r\n      \".current-weather-container .right\"\r\n    );\r\n    rightDiv.innerHTML = `<div class=\"details\"><p class=\"feels-like\">Feels Like: ${currentWeatherJSON.feelsLike}&deg; F</p>\r\n    <p class=\"wind\">Wind: ${currentWeatherJSON.wind} MPH</p>\r\n    <p class=\"humidity\">Humidity: ${currentWeatherJSON.humidity} %</p></div>`;\r\n  }\r\n\r\n  static renderyWeeklyWeather(weekJSON) {\r\n    UI.weeklyWeather.innerHTML = \"\";\r\n    weekJSON.forEach((day) => {\r\n      const weekdayContainer = document.createElement(\"div\");\r\n      weekdayContainer.classList.add(\"weekday-weather-container\");\r\n\r\n      const dayOfWeek = document.createElement(\"div\");\r\n      dayOfWeek.classList.add(\"week-day\");\r\n      dayOfWeek.innerHTML = `<p>${day.day.weekday}</p>`;\r\n      weekdayContainer.appendChild(dayOfWeek);\r\n\r\n      const dayWeather = document.createElement(\"div\");\r\n      dayWeather.classList.add(\"day-weather\");\r\n      dayWeather.innerHTML = `<p class=\"high\">${day.day.high}&deg; F</p><p class=\"low\">${weekJSON[0].day.low}&deg; F</p>`;\r\n      weekdayContainer.appendChild(dayWeather);\r\n\r\n      const dayWeatherCondition = document.createElement(\"div\");\r\n      dayWeatherCondition.classList = \"day-condition\";\r\n      const weatherImage = new Image(100, 100);\r\n      weatherImage.src = `http://openweathermap.org/img/wn/${day.day.icon}@2x.png`;\r\n      dayWeatherCondition.appendChild(weatherImage);\r\n      weekdayContainer.appendChild(dayWeatherCondition);\r\n\r\n      UI.weeklyWeather.appendChild(weekdayContainer);\r\n    });\r\n  }\r\n\r\n  static async init() {\r\n    UI.form.addEventListener(\"submit\", async (e) => {\r\n      e.preventDefault();\r\n      // search field is not empty\r\n      if (UI.search.value !== \"\") {\r\n        try {\r\n          const coordinates = await _controller__WEBPACK_IMPORTED_MODULE_0__[\"default\"].getLatLon(UI.search.value);\r\n          const weatherJson = await _controller__WEBPACK_IMPORTED_MODULE_0__[\"default\"].getWeatherAtCoordinates(\r\n            coordinates.lat,\r\n            coordinates.lon\r\n          );\r\n          const weatherData = await _controller__WEBPACK_IMPORTED_MODULE_0__[\"default\"].processJson(weatherJson);\r\n          UI.renderCurrentWeather(weatherData.location, weatherData.current);\r\n          UI.renderyWeeklyWeather(weatherData.week);\r\n        } catch (err) {\r\n          console.log(err);\r\n        }\r\n      }\r\n    });\r\n  }\r\n}\r\n\r\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (UI);\r\n\n\n//# sourceURL=webpack:///./src/ui.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _controller__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./controller */ \"./src/controller.js\");\n/* harmony import */ var _sample_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sample.json */ \"./src/sample.json\");\n/* harmony import */ var _images_night_jpg__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./images/night.jpg */ \"./src/images/night.jpg\");\n/* harmony import */ var _images_day_jpg__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./images/day.jpg */ \"./src/images/day.jpg\");\n\r\n\r\n\r\n\r\n\r\nclass UI {\r\n  static form = document.querySelector(\"form\");\r\n\r\n  static search = document.querySelector(\"form input\");\r\n\r\n  static weeklyWeather = document.getElementById(\"weekly-weather\");\r\n\r\n  static setDayOrNight() {\r\n    const currentDate = new Date();\r\n    const hours = currentDate.getHours();\r\n    // day\r\n    if (hours > 6 && hours < 20) {\r\n      document.body.style.backgroundImage = `url(${_images_day_jpg__WEBPACK_IMPORTED_MODULE_3__})`;\r\n      document.body.style.color = \"black\";\r\n    }\r\n    // night\r\n    else {\r\n      document.body.style.backgroundImage = `url(${_images_night_jpg__WEBPACK_IMPORTED_MODULE_2__})`;\r\n      document.body.style.color = \"white\";\r\n    }\r\n  }\r\n\r\n  static renderCurrentWeather(locationJSON, currentWeatherJSON) {\r\n    const locationDiv = document.querySelector(\r\n      \".current-weather-container .location\"\r\n    );\r\n    locationDiv.innerHTML = `<p>${locationJSON.value}</p>`;\r\n\r\n    const leftDiv = document.querySelector(\".current-weather-container .left\");\r\n    leftDiv.innerHTML = `<p class=\"current-temp\">${Math.round(\r\n      currentWeatherJSON.currentTemp\r\n    )}&deg; F</p>\r\n    <div class=\"weather-condition\"><img src=\"http://openweathermap.org/img/wn/${\r\n      currentWeatherJSON.icon\r\n    }@2x.png\" class=\"icon\"></img>\r\n    <p class=\"description\">${currentWeatherJSON.description}</p><div>`;\r\n\r\n    const rightDiv = document.querySelector(\r\n      \".current-weather-container .right\"\r\n    );\r\n    rightDiv.innerHTML = `<div class=\"details\"><p class=\"feels-like\">Feels Like: ${Math.round(\r\n      currentWeatherJSON.feelsLike\r\n    )}&deg; F</p>\r\n    <p class=\"wind\">Wind: ${currentWeatherJSON.wind} MPH</p>\r\n    <p class=\"humidity\">Humidity: ${currentWeatherJSON.humidity} %</p></div>`;\r\n  }\r\n\r\n  static renderyWeeklyWeather(weekJSON) {\r\n    UI.weeklyWeather.innerHTML = \"\";\r\n    weekJSON.forEach((dayJSON) => {\r\n      const weekdayContainer = document.createElement(\"div\");\r\n      weekdayContainer.classList.add(\"weekday-weather-container\");\r\n\r\n      const dayOfWeek = document.createElement(\"div\");\r\n      dayOfWeek.classList.add(\"week-day\");\r\n      dayOfWeek.innerHTML = `<p>${dayJSON.day.weekday}</p>`;\r\n      weekdayContainer.appendChild(dayOfWeek);\r\n\r\n      const dayWeather = document.createElement(\"div\");\r\n      dayWeather.classList.add(\"day-weather\");\r\n      dayWeather.innerHTML = `<p class=\"high\">${Math.round(\r\n        dayJSON.day.high\r\n      )}&deg; F</p><p class=\"low\">${Math.round(dayJSON.day.low)}&deg; F</p>`;\r\n      weekdayContainer.appendChild(dayWeather);\r\n\r\n      const dayWeatherCondition = document.createElement(\"div\");\r\n      dayWeatherCondition.classList = \"day-condition\";\r\n      const weatherImage = new Image(100, 100);\r\n      weatherImage.src = `http://openweathermap.org/img/wn/${dayJSON.day.icon}@2x.png`;\r\n      dayWeatherCondition.appendChild(weatherImage);\r\n      weekdayContainer.appendChild(dayWeatherCondition);\r\n\r\n      UI.weeklyWeather.appendChild(weekdayContainer);\r\n    });\r\n  }\r\n\r\n  static async init() {\r\n    UI.setDayOrNight();\r\n\r\n    UI.form.addEventListener(\"submit\", async (e) => {\r\n      e.preventDefault();\r\n      // search field is not empty\r\n      if (UI.search.value !== \"\") {\r\n        try {\r\n          const coordinates = await _controller__WEBPACK_IMPORTED_MODULE_0__[\"default\"].getLatLon(UI.search.value);\r\n          const weatherJson = await _controller__WEBPACK_IMPORTED_MODULE_0__[\"default\"].getWeatherAtCoordinates(\r\n            coordinates.lat,\r\n            coordinates.lon\r\n          );\r\n          const weatherData = await _controller__WEBPACK_IMPORTED_MODULE_0__[\"default\"].processJson(weatherJson);\r\n          UI.renderCurrentWeather(weatherData.location, weatherData.current);\r\n          UI.renderyWeeklyWeather(weatherData.week);\r\n        } catch (err) {\r\n          console.log(err);\r\n        }\r\n       }\r\n    });\r\n  }\r\n}\r\n\r\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (UI);\r\n\n\n//# sourceURL=webpack:///./src/ui.js?");
+
+/***/ }),
+
+/***/ "./src/images/day.jpg":
+/*!****************************!*\
+  !*** ./src/images/day.jpg ***!
+  \****************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+eval("module.exports = __webpack_require__.p + \"2e02e4d4e4b6d5f3d2e6.jpg\";\n\n//# sourceURL=webpack:///./src/images/day.jpg?");
+
+/***/ }),
+
+/***/ "./src/images/night.jpg":
+/*!******************************!*\
+  !*** ./src/images/night.jpg ***!
+  \******************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+eval("module.exports = __webpack_require__.p + \"3b6985690c3320d986e9.jpg\";\n\n//# sourceURL=webpack:///./src/images/night.jpg?");
 
 /***/ }),
 
@@ -89,6 +109,18 @@ eval("module.exports = JSON.parse('{\"lat\":41.7883,\"lon\":-89.6954,\"timezone\
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
@@ -103,6 +135,26 @@ eval("module.exports = JSON.parse('{\"lat\":41.7883,\"lon\":-89.6954,\"timezone\
 /******/ 			}
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	(() => {
+/******/ 		var scriptUrl;
+/******/ 		if (__webpack_require__.g.importScripts) scriptUrl = __webpack_require__.g.location + "";
+/******/ 		var document = __webpack_require__.g.document;
+/******/ 		if (!scriptUrl && document) {
+/******/ 			if (document.currentScript)
+/******/ 				scriptUrl = document.currentScript.src
+/******/ 			if (!scriptUrl) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				if(scripts.length) scriptUrl = scripts[scripts.length - 1].src
+/******/ 			}
+/******/ 		}
+/******/ 		// When supporting browsers where an automatic publicPath is not supported you must specify an output.publicPath manually via configuration
+/******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
+/******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
+/******/ 		scriptUrl = scriptUrl.replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
+/******/ 		__webpack_require__.p = scriptUrl;
 /******/ 	})();
 /******/ 	
 /************************************************************************/

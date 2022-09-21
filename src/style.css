@@ -1,3 +1,12 @@
+@font-face {
+    font-family: 'Gotham-Bold';
+    src: url('./font/Gotham\ Bold.otf');
+}
+
+* {
+    font-family: 'Noto Sans', sans-serif;
+}
+
 body,
 p{
     margin: 0;
@@ -10,6 +19,7 @@ body{
     display: grid;
     grid-template-rows: 1fr 8fr 4fr;
     grid-template-columns: 1fr 1fr;
+    background-size: cover;
 }
 
 header{
@@ -22,20 +32,24 @@ header{
 form{
     display: flex;
     justify-content: center;
+    height: 30%;
 }
 
 form input{
-    width: 75%;
+    width: 90%;
+    border-radius: 10px;
+    padding: 15px;
 }
 
 .logo{
     display: flex;
     justify-content: center;
+    align-items: center;
+    padding: 25px;
 }
 
-.logo .image{
-    width: 75%;
-    border: solid;
+.logo img{
+    width: 100px;
 }
 
 #current-weather{
@@ -67,6 +81,7 @@ form input{
 }
 
 .location p {
+    white-space:nowrap;
     flex: 1;
     font-size: 75px;
     text-align: center;
