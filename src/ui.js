@@ -8,7 +8,9 @@ class UI {
 
   static search = document.querySelector("form input");
 
-  static weeklyWeather = document.getElementById("weekly-weather");
+  static currentWeatherSection = document.getElementById("current-weather");
+
+  static weeklyWeatherSection = document.getElementById("weekly-weather");
 
   static setDayOrNight() {
     const currentDate = new Date();
@@ -16,7 +18,7 @@ class UI {
     // day
     if (hours > 6 && hours < 20) {
       document.body.style.backgroundImage = `url(${day})`;
-      document.body.style.color = "black";
+      document.body.style.color = "white";
     }
     // night
     else {
@@ -26,79 +28,62 @@ class UI {
   }
 
   static renderCurrentWeather(locationJSON, currentWeatherJSON) {
-    const locationDiv = document.querySelector(
-      ".current-weather-container .location"
-    );
-    locationDiv.innerHTML = `<p>${locationJSON.value}</p>`;
-
-    const leftDiv = document.querySelector(".current-weather-container .left");
-    leftDiv.innerHTML = `<p class="current-temp">${Math.round(
-      currentWeatherJSON.currentTemp
-    )}&deg; F</p>
-    <div class="weather-condition"><img src="http://openweathermap.org/img/wn/${
-      currentWeatherJSON.icon
-    }@2x.png" class="icon"></img>
-    <p class="description">${currentWeatherJSON.description}</p><div>`;
-
-    const rightDiv = document.querySelector(
-      ".current-weather-container .right"
-    );
-    rightDiv.innerHTML = `<div class="details"><p class="feels-like">Feels Like: ${Math.round(
-      currentWeatherJSON.feelsLike
-    )}&deg; F</p>
-    <p class="wind">Wind: ${currentWeatherJSON.wind} MPH</p>
-    <p class="humidity">Humidity: ${currentWeatherJSON.humidity} %</p></div>`;
+    UI.currentWeatherSection.innerHTML = `<div class="current-weather-container">
+      <div class="location"><p>${locationJSON.value}</p></div>
+      <div class="left"><p class="current-temp">${Math.round(
+        currentWeatherJSON.currentTemp
+      )}° F</p>
+  <div class="weather-condition"><img src="http://openweathermap.org/img/wn/04d@2x.png" class="icon">
+  <p class="description">${
+    currentWeatherJSON.description
+  }</p><div></div></div></div>
+      <div class="right"><div class="details"><p class="feels-like">Feels Like: ${Math.round(
+        currentWeatherJSON.feelsLike
+      )}° F</p>
+  <p class="wind">Wind: ${currentWeatherJSON.wind} MPH</p>
+  <p class="humidity">Humidity: ${currentWeatherJSON.humidity} %</p></div></div>
+  </div>`;
   }
 
   static renderyWeeklyWeather(weekJSON) {
-    UI.weeklyWeather.innerHTML = "";
+    UI.weeklyWeatherSection.innerHTML = "";
     weekJSON.forEach((dayJSON) => {
       const weekdayContainer = document.createElement("div");
       weekdayContainer.classList.add("weekday-weather-container");
-
-      const dayOfWeek = document.createElement("div");
-      dayOfWeek.classList.add("week-day");
-      dayOfWeek.innerHTML = `<p>${dayJSON.day.weekday}</p>`;
-      weekdayContainer.appendChild(dayOfWeek);
-
-      const dayWeather = document.createElement("div");
-      dayWeather.classList.add("day-weather");
-      dayWeather.innerHTML = `<p class="high">${Math.round(
+      weekdayContainer.innerHTML = `<div class="week-day"><p>${
+        dayJSON.day.weekday
+      }</p></div><div class="day-weather"><p class="high">${Math.round(
         dayJSON.day.high
-      )}&deg; F</p><p class="low">${Math.round(dayJSON.day.low)}&deg; F</p>`;
-      weekdayContainer.appendChild(dayWeather);
+      )}° F</p><p class="low">${Math.round(
+        dayJSON.day.low
+      )}° F</p></div><div class="day-condition"><img width="100" height="100" src="http://openweathermap.org/img/wn/${dayJSON.day.icon}@2x.png"></div>`;
 
-      const dayWeatherCondition = document.createElement("div");
-      dayWeatherCondition.classList = "day-condition";
-      const weatherImage = new Image(100, 100);
-      weatherImage.src = `http://openweathermap.org/img/wn/${dayJSON.day.icon}@2x.png`;
-      dayWeatherCondition.appendChild(weatherImage);
-      weekdayContainer.appendChild(dayWeatherCondition);
-
-      UI.weeklyWeather.appendChild(weekdayContainer);
+      UI.weeklyWeatherSection.appendChild(weekdayContainer);
     });
   }
 
   static async init() {
     UI.setDayOrNight();
-
     UI.form.addEventListener("submit", async (e) => {
       e.preventDefault();
       // search field is not empty
       if (UI.search.value !== "") {
         try {
-          const coordinates = await Controller.getLatLon(UI.search.value);
+          const locationJson = await Controller.getLatLon(UI.search.value);
           const weatherJson = await Controller.getWeatherAtCoordinates(
-            coordinates.lat,
-            coordinates.lon
+            locationJson.lat,
+            locationJson.lon
           );
-          const weatherData = await Controller.processJson(weatherJson);
+          const weatherData = await Controller.processJson(
+            weatherJson,
+            locationJson
+          );
           UI.renderCurrentWeather(weatherData.location, weatherData.current);
           UI.renderyWeeklyWeather(weatherData.week);
         } catch (err) {
           console.log(err);
         }
-       }
+      }
     });
   }
 }

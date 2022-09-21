@@ -17,7 +17,7 @@ class Controller {
         `https://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=1&appid=${Controller.key}`
       );
       const json = await response.json();
-      return { lat: json[0].lat, lon: json[0].lon };
+      return json[0];
     } catch (err) {
       console.log(err);
       return err;
@@ -50,21 +50,16 @@ class Controller {
     }
   }
 
-  static async processLocation(json) {
+  static processLocation(json) {
     let location;
     try {
-      // lat and lon to fetch and process location data
-      const locationData = await fetch(
-        `http://api.openweathermap.org/geo/1.0/reverse?lat=${json.lat}&lon=${json.lon}&limit=1&appid=${Controller.key}`
-      );
-      const locationJson = await locationData.json();
-      if ("state" in locationJson[0]) {
+      if ("state" in json) {
         location = {
-          value: `${locationJson[0].name}, ${locationJson[0].state}`,
+          value: `${json.name}, ${json.state}`,
         };
       } else {
         location = {
-          value: `${locationJson[0].name}, ${locationJson[0].country}`,
+          value: `${json.name}, ${json.country}`,
         };
       }
       return location;
@@ -116,10 +111,10 @@ class Controller {
     }
   }
 
-  static async processJson(json) {
-    const location = await Controller.processLocation(json);
-    const current = Controller.processCurrentWeather(json);
-    const week = Controller.processWeeklyWeather(json);
+  static async processJson(WeatherJSON, locationJSON) {
+    const location = await Controller.processLocation(locationJSON);
+    const current = await Controller.processCurrentWeather(WeatherJSON);
+    const week = await Controller.processWeeklyWeather(WeatherJSON);
 
     return { location, current, week };
   }

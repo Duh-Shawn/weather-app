@@ -4,23 +4,18 @@ import sampleJson from "./sample.json";
 
 async function main() {
   try {
-    const coordinates = await Controller.getLatLon("london");
+    const locationJson = await Controller.getLatLon("London");
     const weatherJson = await Controller.getWeatherAtCoordinates(
-      coordinates.lat,
-      coordinates.lon
+      locationJson.lat,
+      locationJson.lon
     );
-    const weatherData = await Controller.processJson(weatherJson);
+    const weatherData = await Controller.processJson(weatherJson, locationJson);
     UI.renderCurrentWeather(weatherData.location, weatherData.current);
     UI.renderyWeeklyWeather(weatherData.week);
   } catch (err) {
     console.log(err);
   }
   UI.init();
-  // const weatherData = await Controller.processJson(sampleJson);
-  // console.log(weatherData);
-  // UI.renderCurrentWeather(weatherData.location, weatherData.current);
-  // UI.renderyWeeklyWeather(weatherData.week);
-  // UI.setDayOrNight();
 }
 
 main();

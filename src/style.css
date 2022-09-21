@@ -1,20 +1,9 @@
-@font-face {
-    font-family: 'Gotham-Bold';
-    src: url('./font/Gotham\ Bold.otf');
-}
-
 * {
     font-family: 'Noto Sans', sans-serif;
-}
-
-body,
-p{
     margin: 0;
 }
 
 body{
-    margin: 0;
-    border:1px solid black;
     height: 100vh;
     display: grid;
     grid-template-rows: 1fr 8fr 4fr;
@@ -54,23 +43,16 @@ form input{
 
 #current-weather{
     display: flex;
-    /* border:solid; */
     justify-content: center;
     align-items: center;
 }
 
 .current-weather-container{
-    /* border:solid; */
     height: 50%;
     width: 50%;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 4fr;
-}
-
-.current-weather-container p,
-.current-weather-container div{
-    /* border: solid; */
 }
 
 .location,
@@ -106,7 +88,7 @@ form input{
     font-size: 25px;
     justify-content: center;
     align-items: center;
-    border-left: 2px solid rgba(0, 0, 0, 0.151); 
+    border-left: 2px solid rgba(255, 255, 255, 0.151); 
 }
 
 .details{
@@ -130,15 +112,15 @@ form input{
     aspect-ratio: 1 / 1;
     display: flex;
     flex-direction: column;
-    /* grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 4fr; */
     justify-content: space-around;
     align-items: center;
-    
+
+    /* Card styling for easier readibility */
+    background-color:rgba(0, 0, 0, 0.25);
+    border-radius: 5px;  
 }
 
 .week-day{
-    margin: 0;
     font-size: 30px;
 }
 
@@ -147,12 +129,4 @@ form input{
 }
 .low{
     font-size: 15px;
-}
-
-.weekday-weather-container img{
-    flex: 0;
-}
-
-.week-day p{
-
 }
