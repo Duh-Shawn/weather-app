@@ -6,6 +6,8 @@ class UI {
 
   static search = document.querySelector("form input");
 
+  static weeklyWeather = document.getElementById("weekly-weather");
+
   static renderCurrentWeather(locationJSON, currentWeatherJSON) {
     const locationDiv = document.querySelector(
       ".current-weather-container .location"
@@ -13,7 +15,6 @@ class UI {
     locationDiv.innerHTML = `<p>${locationJSON.value}</p>`;
 
     const leftDiv = document.querySelector(".current-weather-container .left");
-    console.log(leftDiv);
     leftDiv.innerHTML = `<p class="current-temp">${currentWeatherJSON.currentTemp}&deg; F</p>
     <div class="weather-condition"><img src="http://openweathermap.org/img/wn/${currentWeatherJSON.icon}@2x.png" class="icon"></img>
     <p class="description">${currentWeatherJSON.description}</p><div>`;
@@ -23,7 +24,34 @@ class UI {
     );
     rightDiv.innerHTML = `<div class="details"><p class="feels-like">Feels Like: ${currentWeatherJSON.feelsLike}&deg; F</p>
     <p class="wind">Wind: ${currentWeatherJSON.wind} MPH</p>
-    <p class="humidity">Humidity: ${currentWeatherJSON.humidity}</p></div>`;
+    <p class="humidity">Humidity: ${currentWeatherJSON.humidity} %</p></div>`;
+  }
+
+  static renderyWeeklyWeather(weekJSON) {
+    UI.weeklyWeather.innerHTML = "";
+    weekJSON.forEach((day) => {
+      const weekdayContainer = document.createElement("div");
+      weekdayContainer.classList.add("weekday-weather-container");
+
+      const dayOfWeek = document.createElement("div");
+      dayOfWeek.classList.add("week-day");
+      dayOfWeek.innerHTML = `<p>${day.day.weekday}</p>`;
+      weekdayContainer.appendChild(dayOfWeek);
+
+      const dayWeather = document.createElement("div");
+      dayWeather.classList.add("day-weather");
+      dayWeather.innerHTML = `<p class="high">${day.day.high}&deg; F</p><p class="low">${weekJSON[0].day.low}&deg; F</p>`;
+      weekdayContainer.appendChild(dayWeather);
+
+      const dayWeatherCondition = document.createElement("div");
+      dayWeatherCondition.classList = "day-condition";
+      const weatherImage = new Image(100, 100);
+      weatherImage.src = `http://openweathermap.org/img/wn/${day.day.icon}@2x.png`;
+      dayWeatherCondition.appendChild(weatherImage);
+      weekdayContainer.appendChild(dayWeatherCondition);
+
+      UI.weeklyWeather.appendChild(weekdayContainer);
+    });
   }
 
   static async init() {
@@ -38,10 +66,8 @@ class UI {
             coordinates.lon
           );
           const weatherData = await Controller.processJson(weatherJson);
-          //   const coordinates = await Controller.getLatLon(UI.search.value);
-          //   const weatherData = await Controller.processJson(sampleJson);
-          console.log(coordinates);
-          console.log(weatherData);
+          UI.renderCurrentWeather(weatherData.location, weatherData.current);
+          UI.renderyWeeklyWeather(weatherData.week);
         } catch (err) {
           console.log(err);
         }
