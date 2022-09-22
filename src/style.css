@@ -130,3 +130,8 @@ form input{
 .low{
     font-size: 15px;
 }
+
+
+#hourly-weather{
+    grid-row: 4;
+}

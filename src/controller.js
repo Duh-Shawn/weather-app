@@ -103,12 +103,58 @@ class Controller {
         };
         week.push({ day });
       });
-      week.shift(); // remove first day of the week since we are referencing to it as current day
+      // week.shift(); // remove first day of the week since we are referencing to it as current day
+      week[0].day.weekday = "Today";
       return week;
     } catch (err) {
       console.log(err);
       return err;
     }
+  }
+
+  static processHourlyWeather(json) {
+    // 48 hours of weather data pulled from api
+    const dataCount = 48;
+
+    const currentDate = new Date();
+    const hours = currentDate.getHours();
+    const hoursLeftToday = 24 - hours;
+    const hourlyList = json.hourly;
+
+    // return array to collect the days 48 hours of data is split upon
+    const days = [];
+
+    // array containing api data for remaining hours in the current day
+    const today = [];
+    for (let i = 0; i < hoursLeftToday; i++) {
+      today.push(hourlyList[i]);
+    }
+    days.push(today);
+
+    // compute if multiple days worth of data still exists from API
+    const daysLeft = (dataCount - hoursLeftToday) / 24;
+    // has been found that less than 48 hours of data remains - only 1 day's worth
+    if (daysLeft <= 1) {
+      const dayOne = [];
+      for (let i = hoursLeftToday; i < dataCount; i++) {
+        dayOne.push(hourlyList[i]);
+      }
+      days.push(dayOne);
+      // has been found that more than 48 hours of data remains- must be split across two days
+    } else {
+      const dayOne = [];
+      for (let i = hoursLeftToday; i < hoursLeftToday + 24; i++) {
+        dayOne.push(hourlyList[i]);
+      }
+      days.push(dayOne);
+
+      const dayTwo = [];
+      for (let i = hoursLeftToday + 24; i < dataCount; i++) {
+        dayTwo.push(hourlyList[i]);
+      }
+      days.push(dayTwo);
+    }
+    return days;
   }
 
   static async processJson(WeatherJSON, locationJSON) {
