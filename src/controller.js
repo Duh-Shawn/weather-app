@@ -160,9 +160,10 @@ class Controller {
   static async processJson(WeatherJSON, locationJSON) {
     const location = await Controller.processLocation(locationJSON);
     const current = await Controller.processCurrentWeather(WeatherJSON);
-    const week = await Controller.processWeeklyWeather(WeatherJSON);
-
-    return { location, current, week };
+    const weekly = await Controller.processWeeklyWeather(WeatherJSON);
+    const hourly = await Controller.processHourlyWeather(WeatherJSON);
+    console.log(hourly);
+    return { location, current, weekly, hourly };
   }
 }
 
