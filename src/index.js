@@ -1,5 +1,5 @@
-import UI from "./ui";
-import Controller from "./controller";
+import * as UI from "./ui";
+import * as Controller from "./controller";
 import sampleJson from "./sample.json";
 
 function getCurrentLocationLatAndLon() {
@@ -9,6 +9,7 @@ function getCurrentLocationLatAndLon() {
 }
 
 async function main() {
+  UI.setDayOrNight();
   try {
     let weatherJson;
     let locationJson;
@@ -40,7 +41,6 @@ async function main() {
   } catch (err) {
     console.log(err);
   }
-  UI.init();
 }
 
 main();
