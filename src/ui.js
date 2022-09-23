@@ -16,7 +16,7 @@ class UI {
 
   static setDayOrNight() {
     const currentDate = new Date();
-    const hours = 7; //currentDate.getHours();
+    const hours = currentDate.getHours();
     // day
     if (hours > 6 && hours < 20) {
       document.body.style.backgroundImage = `url(${day})`;
@@ -79,15 +79,8 @@ class UI {
     });
   }
 
-  static toggleHourlyWeatherContainer(hourlyBlock) {
-    if (UI.hourlyWeatherSection.classList.contains("hidden")) {
-      UI.hourlyWeatherSection.classList.remove("hidden");
-      hourlyBlock.classList.add("arrow-down");
-      return false;
-    }
-    UI.hourlyWeatherSection.classList.add("hidden");
-    hourlyBlock.classList.remove("arrow-down");
-    return true;
+  static toggleHourlyWeatherContainer() {
+    UI.hourlyWeatherSection.classList.toggle("hidden");
   }
 
   static renderHourlyWeather(hours) {
@@ -125,8 +118,14 @@ class UI {
             toggledArrow.classList.remove("arrow-down");
           }
         }
-        const isHidden = UI.toggleHourlyWeatherContainer(e.target);
-        if (!isHidden) {
+        e.target.classList.toggle("arrow-down");
+
+        console.log(UI.hourlyWeatherSection);
+        const isHidden = UI.hourlyWeatherSection.classList.contains("hidden");
+        if (!isHidden && e.target.classList.contains("arrow-down")) {
+          UI.renderHourlyWeather(hourlyList[i]);
+        } else {
+          UI.toggleHourlyWeatherContainer();
           UI.renderHourlyWeather(hourlyList[i]);
         }
       });

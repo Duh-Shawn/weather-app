@@ -11,6 +11,19 @@ class Controller {
     "Saturday",
   ];
 
+  static async getLocationFromLatLon(lat, lon) {
+    try {
+      const response = await fetch(
+        `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${Controller.key}`
+      );
+      const json = await response.json();
+      return json[0];
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  }
+
   static async getLatLon(location) {
     try {
       const response = await fetch(
