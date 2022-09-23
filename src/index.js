@@ -9,10 +9,9 @@ function getCurrentLocationLatAndLon() {
 }
 
 async function main() {
-  UI.setDayOrNight();
+  let weatherJson;
+  let locationJson;
   try {
-    let weatherJson;
-    let locationJson;
     if ("geolocation" in navigator) {
       /* geolocation is available */
       const position = await getCurrentLocationLatAndLon();
@@ -32,15 +31,37 @@ async function main() {
         locationJson.lon
       );
     }
+  } catch (err) {
+    console.log(err);
+  }
 
-    const weatherData = await Controller.processJson(weatherJson, locationJson);
-    UI.renderCurrentWeather(weatherData.location, weatherData.current);
-    UI.renderWeeklyWeather(weatherData.weekly);
-    const hourly = Controller.processHourlyWeather(weatherJson);
+  try {
+    const location = await Controller.processLocation(locationJson);
+    const current = await Controller.processCurrentWeather(weatherJson);
+    UI.renderCurrentWeather(location, current);
+  } catch (err) {
+    console.log(err);
+  }
+
+  try {
+    const weekly = await Controller.processWeeklyWeather(weatherJson);
+    UI.renderWeeklyWeather(weekly);
+  } catch (err) {
+    console.log(err);
+  }
+
+  try {
+    const hourly = await Controller.processHourlyWeather(weatherJson);
     UI.initDailyBlocks(hourly);
   } catch (err) {
     console.log(err);
   }
+
+  // const weatherData = await Controller.processJson(weatherJson, locationJson);
+  // UI.renderCurrentWeather(weatherData.location, weatherData.current);
+  // UI.renderWeeklyWeather(weatherData.weekly);
+  // const hourly = Controller.processHourlyWeather(weatherJson);
+  // UI.initDailyBlocks(hourly);
 }
 
 main();

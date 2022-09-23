@@ -90,7 +90,7 @@ function processCurrentWeather(json) {
       currentTemp: json.current.temp,
       feelsLike: json.current.feels_like,
       wind: json.current.wind_speed,
-      humidity: json.current.humidity,
+      humidity: json.current.humidity
     };
     return current;
   } catch (err) {
@@ -182,5 +182,8 @@ export {
   getLocationFromLatLon,
   getWeatherAtCoordinates,
   processJson,
+  processLocation,
+  processCurrentWeather,
+  processWeeklyWeather,
   processHourlyWeather,
 };

@@ -132,6 +132,7 @@ function initDailyBlocks(hourlyList) {
 }
 
 (async function init() {
+  setDayOrNight();
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     // search field is not empty
