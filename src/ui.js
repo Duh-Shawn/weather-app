@@ -16,7 +16,7 @@ class UI {
 
   static setDayOrNight() {
     const currentDate = new Date();
-    const hours = 7;//currentDate.getHours();
+    const hours = 7; //currentDate.getHours();
     // day
     if (hours > 6 && hours < 20) {
       document.body.style.backgroundImage = `url(${day})`;
@@ -79,24 +79,20 @@ class UI {
     });
   }
 
-  static initDailyBlocks(hourlyList) {
-    console.log(hourlyList);
-    const dailyBlockList = document.querySelectorAll(
-      ".weekday-weather-container"
-    );
-    console.log(hourlyList.length);
-    for (let i = 0; i < hourlyList.length; i++) {
-      dailyBlockList[i].addEventListener("click", () => {
-        UI.renderHourlyWeather(hourlyList[i]);
-      });
+  static toggleHourlyWeatherContainer(hourlyBlock) {
+    if (UI.hourlyWeatherSection.classList.contains("hidden")) {
+      UI.hourlyWeatherSection.classList.remove("hidden");
+      hourlyBlock.classList.add("arrow-down");
+      return false;
     }
+    UI.hourlyWeatherSection.classList.add("hidden");
+    hourlyBlock.classList.remove("arrow-down");
+    return true;
   }
 
   static renderHourlyWeather(hours) {
-    console.log(hours);
     UI.hourlyWeatherSection.innerHTML = "";
     hours.forEach((timeSlot) => {
-      console.log(timeSlot);
       const timeSlotContainer = document.createElement("div");
       timeSlotContainer.classList.add("time-slot");
       timeSlotContainer.innerHTML = `<div class="time-slot">
@@ -104,11 +100,37 @@ class UI {
           <img width="50" height="50" class="hour-icon" src="http://openweathermap.org/img/wn/${
             timeSlot.weather[0].icon
           }@2x.png">
-          <p class="hour-rain">${timeSlot.pop * 100}%</p>
+          <p class="hour-rain">${Math.round(timeSlot.pop * 100)}%</p>
       <p class="hour-temp">${Math.round(timeSlot.temp)}° F</p>
   </div>`;
       UI.hourlyWeatherSection.appendChild(timeSlotContainer);
     });
+  }
+
+  static initDailyBlocks(hourlyList) {
+    const dailyBlockList = document.querySelectorAll(
+      ".weekday-weather-container"
+    );
+    for (let i = 0; i < hourlyList.length; i++) {
+      // add div to toggle arrow styling to point to which block toggled the hourly forecast
+      const arrow = document.createElement("div");
+      arrow.classList.add("arrow");
+      dailyBlockList[i].appendChild(arrow);
+
+      arrow.addEventListener("click", (e) => {
+        // check is another arrow is already toggled
+        const toggledArrow = document.querySelector(".arrow-down");
+        if (toggledArrow !== null) {
+          if (toggledArrow !== e.target) {
+            toggledArrow.classList.remove("arrow-down");
+          }
+        }
+        const isHidden = UI.toggleHourlyWeatherContainer(e.target);
+        if (!isHidden) {
+          UI.renderHourlyWeather(hourlyList[i]);
+        }
+      });
+    }
   }
 
   static async init() {
