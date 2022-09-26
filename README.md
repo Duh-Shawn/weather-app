@@ -13,3 +13,6 @@ This project utilizes the openweathmap API to display weather forecasts. Users a
 Night background source : https://www.pexels.com/photo/blue-and-white-milky-way-3214110/
 Day background source : https://www.pexels.com/photo/white-clouds-531767/
 Weather API : https://openweathermap.org/api
+
+
+![image](https://user-images.githubusercontent.com/50642419/192399872-5541a10e-4321-41af-8984-0f0447c44169.png)
