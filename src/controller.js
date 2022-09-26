@@ -2,21 +2,11 @@ import { utcToZonedTime } from "date-fns-tz";
 
 const key = "0b405e45394070668f8bdacc3cabfa28";
 
-const weekdays = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
+const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 async function getLocationFromLatLon(lat, lon) {
   try {
-    const response = await fetch(
-      `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${key}`
-    );
+    const response = await fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${key}`);
     const json = await response.json();
     return json[0];
   } catch (err) {
@@ -27,9 +17,7 @@ async function getLocationFromLatLon(lat, lon) {
 
 async function getLatLon(location) {
   try {
-    const response = await fetch(
-      `https://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=1&appid=${key}`
-    );
+    const response = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=1&appid=${key}`);
     const json = await response.json();
     return json[0];
   } catch (err) {
@@ -40,9 +28,7 @@ async function getLatLon(location) {
 
 async function getWeather(location) {
   try {
-    const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${location}&APPID=${key}`
-    );
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${location}&APPID=${key}`);
     const json = await response.json();
     return json;
   } catch (err) {
@@ -53,9 +39,7 @@ async function getWeather(location) {
 
 async function getWeatherAtCoordinates(lat, lon) {
   try {
-    const response = await fetch(
-      `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=imperial&appid=${key}`
-    );
+    const response = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=imperial&appid=${key}`);
     const json = await response.json();
     return json;
   } catch (err) {
@@ -149,8 +133,7 @@ function convertCurrentTimeByTimeZone(unixTime, timeZone) {
 
 function processHourlyWeather(json) {
   let hours;
-  const sameTimeZone =
-    json.timezone === Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const sameTimeZone = json.timezone === Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   if (!sameTimeZone) {
     hours = utcToZonedTime(json.current.dt * 1000, json.timezone).getHours();
@@ -172,10 +155,7 @@ function processHourlyWeather(json) {
   for (let i = 0; i < hoursLeftToday; i++) {
     // if the hourly results come from a different time zone than the user's browser. Convert the time zone for the forecasted location.
     if (!sameTimeZone) {
-      hourlyList[i].dt = convertCurrentTimeByTimeZone(
-        hourlyList[i].dt,
-        json.timezone
-      );
+      hourlyList[i].dt = convertCurrentTimeByTimeZone(hourlyList[i].dt, json.timezone);
     }
     today.push(hourlyList[i]);
   }
@@ -189,10 +169,7 @@ function processHourlyWeather(json) {
     const dayTwo = [];
     for (let i = hoursLeftToday; i < dataCount; i++) {
       if (!sameTimeZone) {
-        hourlyList[i].dt = convertCurrentTimeByTimeZone(
-          hourlyList[i].dt,
-          json.timezone
-        );
+        hourlyList[i].dt = convertCurrentTimeByTimeZone(hourlyList[i].dt, json.timezone);
       }
       dayTwo.push(hourlyList[i]);
     }
@@ -203,10 +180,7 @@ function processHourlyWeather(json) {
     const dayTwo = [];
     for (let i = hoursLeftToday; i < hoursLeftToday + 24; i++) {
       if (!sameTimeZone) {
-        hourlyList[i].dt = convertCurrentTimeByTimeZone(
-          hourlyList[i].dt,
-          json.timezone
-        );
+        hourlyList[i].dt = convertCurrentTimeByTimeZone(hourlyList[i].dt, json.timezone);
       }
       dayTwo.push(hourlyList[i]);
     }
@@ -215,10 +189,7 @@ function processHourlyWeather(json) {
     const dayThree = [];
     for (let i = hoursLeftToday + 24; i < dataCount; i++) {
       if (!sameTimeZone) {
-        hourlyList[i].dt = convertCurrentTimeByTimeZone(
-          hourlyList[i].dt,
-          json.timezone
-        );
+        hourlyList[i].dt = convertCurrentTimeByTimeZone(hourlyList[i].dt, json.timezone);
       }
       dayThree.push(hourlyList[i]);
     }
