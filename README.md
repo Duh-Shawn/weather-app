@@ -16,3 +16,5 @@ Weather API : https://openweathermap.org/api
 
 
 ![image](https://user-images.githubusercontent.com/50642419/192399872-5541a10e-4321-41af-8984-0f0447c44169.png)
+![image](https://user-images.githubusercontent.com/50642419/192400040-2af2c887-fe4c-4564-9fa2-052a9e1dc09c.png)
+
