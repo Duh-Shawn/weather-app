@@ -28,19 +28,6 @@ function setDayOrNight() {
   }
 }
 
-function formatTime(unixTime) {
-  const date = new Date(unixTime * 1000);
-  let hours = date.getHours();
-  let ampm;
-  if (hours >= 12) {
-    ampm = "pm";
-  } else {
-    ampm = "am";
-  }
-  hours = ((hours + 11) % 12) + 1;
-  return hours + ampm;
-}
-
 function renderCurrentWeather(locationJSON, currentWeatherJSON) {
   currentWeatherSection.innerHTML = `<div class="current-weather-container">
       <div class="location"><p>${locationJSON.value}</p></div>
@@ -88,7 +75,7 @@ function renderHourlyWeather(hours) {
     const timeSlotContainer = document.createElement("div");
     timeSlotContainer.classList.add("time-slot");
     timeSlotContainer.innerHTML = `<div class="time-slot">
-      <p class="time">${formatTime(timeSlot.dt)}</p>
+      <p class="time">${Controller.formatTime(timeSlot.dt)}</p>
           <img width="50" height="50" class="hour-icon" src="http://openweathermap.org/img/wn/${
             timeSlot.weather[0].icon
           }@2x.png">

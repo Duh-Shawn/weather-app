@@ -1,3 +1,5 @@
+import { utcToZonedTime } from "date-fns-tz";
+
 const key = "0b405e45394070668f8bdacc3cabfa28";
 
 const weekdays = [
@@ -64,14 +66,17 @@ async function getWeatherAtCoordinates(lat, lon) {
 
 function processLocation(json) {
   let location;
+  const regionNamesInEnglish = new Intl.DisplayNames(["en"], {
+    type: "region",
+  });
   try {
-    if ("state" in json) {
+    if (json.country === "US") {
       location = {
         value: `${json.name}, ${json.state}`,
       };
     } else {
       location = {
-        value: `${json.name}, ${json.country}`,
+        value: `${json.name}, ${regionNamesInEnglish.of(json.country)}`,
       };
     }
     return location;
@@ -90,7 +95,7 @@ function processCurrentWeather(json) {
       currentTemp: json.current.temp,
       feelsLike: json.current.feels_like,
       wind: json.current.wind_speed,
-      humidity: json.current.humidity
+      humidity: json.current.humidity,
     };
     return current;
   } catch (err) {
@@ -124,12 +129,38 @@ function processWeeklyWeather(json) {
   }
 }
 
+function formatTime(unixTime) {
+  const date = new Date(unixTime * 1000);
+  let hours = date.getHours();
+  let ampm;
+  if (hours >= 12) {
+    ampm = "pm";
+  } else {
+    ampm = "am";
+  }
+  hours = ((hours + 11) % 12) + 1;
+  return hours + ampm;
+}
+
+function convertCurrentTimeByTimeZone(unixTime, timeZone) {
+  // convert UTC unixTime value in milliseconds to designated timezone time in seconds
+  return utcToZonedTime(unixTime * 1000, timeZone) / 1000;
+}
+
 function processHourlyWeather(json) {
+  let hours;
+  const sameTimeZone =
+    json.timezone === Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  if (!sameTimeZone) {
+    hours = utcToZonedTime(json.current.dt * 1000, json.timezone).getHours();
+  } else {
+    hours = new Date().getHours();
+  }
+
   // 48 hours of weather data pulled from api
   const dataCount = 48;
 
-  const currentDate = new Date();
-  const hours = currentDate.getHours();
   const hoursLeftToday = 24 - hours;
   const hourlyList = json.hourly;
 
@@ -139,32 +170,59 @@ function processHourlyWeather(json) {
   // array containing api data for remaining hours in the current day
   const today = [];
   for (let i = 0; i < hoursLeftToday; i++) {
+    // if the hourly results come from a different time zone than the user's browser. Convert the time zone for the forecasted location.
+    if (!sameTimeZone) {
+      hourlyList[i].dt = convertCurrentTimeByTimeZone(
+        hourlyList[i].dt,
+        json.timezone
+      );
+    }
     today.push(hourlyList[i]);
   }
   days.push(today);
 
   // compute if multiple days worth of data still exists from API
   const daysLeft = (dataCount - hoursLeftToday) / 24;
+
   // has been found that less than 48 hours of data remains - only 1 day's worth
   if (daysLeft <= 1) {
-    const dayOne = [];
-    for (let i = hoursLeftToday; i < dataCount; i++) {
-      dayOne.push(hourlyList[i]);
-    }
-    days.push(dayOne);
-    // has been found that more than 48 hours of data remains- must be split across two days
-  } else {
-    const dayOne = [];
-    for (let i = hoursLeftToday; i < hoursLeftToday + 24; i++) {
-      dayOne.push(hourlyList[i]);
-    }
-    days.push(dayOne);
-
     const dayTwo = [];
-    for (let i = hoursLeftToday + 24; i < dataCount; i++) {
+    for (let i = hoursLeftToday; i < dataCount; i++) {
+      if (!sameTimeZone) {
+        hourlyList[i].dt = convertCurrentTimeByTimeZone(
+          hourlyList[i].dt,
+          json.timezone
+        );
+      }
       dayTwo.push(hourlyList[i]);
     }
     days.push(dayTwo);
+
+    // has been found that more than 48 hours of data remains- must be split across two days
+  } else {
+    const dayTwo = [];
+    for (let i = hoursLeftToday; i < hoursLeftToday + 24; i++) {
+      if (!sameTimeZone) {
+        hourlyList[i].dt = convertCurrentTimeByTimeZone(
+          hourlyList[i].dt,
+          json.timezone
+        );
+      }
+      dayTwo.push(hourlyList[i]);
+    }
+    days.push(dayTwo);
+
+    const dayThree = [];
+    for (let i = hoursLeftToday + 24; i < dataCount; i++) {
+      if (!sameTimeZone) {
+        hourlyList[i].dt = convertCurrentTimeByTimeZone(
+          hourlyList[i].dt,
+          json.timezone
+        );
+      }
+      dayThree.push(hourlyList[i]);
+    }
+    days.push(dayThree);
   }
   return days;
 }
@@ -186,4 +244,5 @@ export {
   processCurrentWeather,
   processWeeklyWeather,
   processHourlyWeather,
+  formatTime,
 };
