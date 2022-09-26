@@ -104,7 +104,7 @@ function processWeeklyWeather(json) {
       };
       week.push({ day });
     });
-    // week.shift(); // remove first day of the week since we are referencing to it as current day
+
     week[0].day.weekday = "Today";
     return week;
   } catch (err) {
